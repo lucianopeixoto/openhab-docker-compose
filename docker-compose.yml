@@ -28,6 +28,7 @@ services:
       - "1883:1883"
     volumes:
       - "mosquitto-config:/mosquitto/config"
+      - "mosquitto-log:/mosquitto/log"
   config-editor:
     image: "linuxserver/code-server"
     networks:
@@ -41,7 +42,8 @@ services:
       - "FILE__PASSWORD=/run/secrets/code-server-passwd"
     volumes:
       - "code-server-config:/config"
-      - "mosquitto-config:/mosquitto-config"
+      - "mosquitto-config:/mosquitto/config"
+      - "mosquitto-log:/mosquitto/log"
       - "/opt/openhab/conf:/openhab/conf"
       - "/opt/openhab/userdata:/openhab/userdata"
     secrets:
@@ -49,6 +51,7 @@ services:
 
 volumes:
   mosquitto-config:
+  mosquitto-log:
   code-server-config:
 
 networks:
