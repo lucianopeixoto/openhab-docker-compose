@@ -1,9 +1,12 @@
-version: "3"
+version: "3.8"
 
 services:
   openhab:
     image: "openhab/openhab"
-    restart: always
+    depends_on:
+      - "mosquitto"
+    networks:
+      - "frontend"
     ports:
       - "8080:8080"
       - "8101:8101"
@@ -17,3 +20,41 @@ services:
       OPENHAB_HTTP_PORT: "8080"
       OPENHAB_HTTPS_PORT: "8443"
       EXTRA_JAVA_OPTS: "-Duser.timezone=America/Bahia"
+  mosquitto:
+    image: "eclipse-mosquitto"
+    networks:
+      - "frontend"
+    ports:
+      - "1883:1883"
+    volumes:
+      - "mosquitto-config:/mosquitto/config"
+  config-editor:
+    image: "linuxserver/code-server"
+    networks:
+      - "frontend"
+    ports:
+      - "8443:8443"
+    environment:
+      - "PUID=0"
+      - "GUID=0"
+      - "TZ=America/Bahia"
+      - "FILE__PASSWORD=/run/secrets/code-server-passwd"
+    volumes:
+      - "code-server-config:/config"
+      - "mosquitto-config:/mosquitto-config"
+      - "/opt/openhab/conf:/openhab/conf"
+      - "/opt/openhab/userdata:/openhab/userdata"
+    secrets:
+      - "code-server-passwd"
+
+volumes:
+  mosquitto-config:
+  code-server-config:
+
+networks:
+  frontend:
+    driver: "bridge"
+
+secrets:
+  code-server-passwd: 
+    external: true
