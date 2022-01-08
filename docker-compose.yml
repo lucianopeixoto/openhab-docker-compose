@@ -1,12 +1,13 @@
 version: "3.8"
 
 services:
+
   openhab:
     image: "openhab/openhab"
     depends_on:
       - "mosquitto"
     networks:
-      - "frontend"
+      - "realworld"
     ports:
       - "8080:8080"
       - "8101:8101"
@@ -20,24 +21,28 @@ services:
       OPENHAB_HTTP_PORT: "8080"
       OPENHAB_HTTPS_PORT: "8443"
       EXTRA_JAVA_OPTS: "-Duser.timezone=America/Bahia"
+      USER_ID: 1000
+      GROUP_ID: 1000
+      
   mosquitto:
     image: "eclipse-mosquitto"
     networks:
-      - "frontend"
+      - "realworld"
     ports:
       - "1883:1883"
     volumes:
       - "mosquitto-config:/mosquitto/config"
       - "mosquitto-log:/mosquitto/log"
+      
   config-editor:
     image: "linuxserver/code-server"
     networks:
-      - "frontend"
+      - "realworld"
     ports:
       - "8443:8443"
     environment:
-      - "PUID=0"
-      - "GUID=0"
+      - "PUID=1000"
+      - "GUID=1000"
       - "TZ=America/Bahia"
       - "FILE__PASSWORD=/run/secrets/code-server-passwd"
     volumes:
