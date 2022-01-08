@@ -60,7 +60,7 @@ volumes:
   code-server-config:
 
 networks:
-  frontend:
+  realworld:
     driver: "bridge"
 
 secrets:
